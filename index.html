@@ -16,7 +16,7 @@
 <title>Press On</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=Barlow:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=Barlow:wght@400;500;600;700&family=Tinos:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Layout: a printed daily devotional in a phone column — varsity navy and gold on cool paper, heavy condensed caps title, Times-style indented paragraphs, brown date band, bold brown prayer. Bottom tab bar. */
 :root{
@@ -24,7 +24,7 @@
   --band:#1c2b4b; --band-ink:#f4ecd8; --prayer:#86600f; --ok:#2f7a55; --shadow:rgba(20,30,60,.16);
   --display:"Oswald","Arial Narrow","Helvetica Neue",sans-serif;
   --serif:"Literata",Georgia,"Times New Roman",serif;
-  --scripture:"EB Garamond",Garamond,Georgia,"Times New Roman",serif;
+  --scripture:"Tinos","Times New Roman",Times,serif;
   --ui:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -75,7 +75,7 @@ h2{font-size:28px}
 .ptag{align-self:center;font-family:var(--ui);font-weight:600;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border:1px solid var(--rule);border-radius:999px;padding:3px 12px}
 .ptitle{font-size:clamp(34px,9.4vw,50px);line-height:1;text-align:center;letter-spacing:.005em;margin-top:-6px}
 .pfig{margin:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
-.pverse{margin:0;font-family:var(--scripture);font-style:italic;font-size:22px;line-height:1.45;color:var(--ink-2);max-width:34em;text-wrap:pretty}
+.pverse{margin:0;font-family:var(--scripture);font-style:italic;font-size:20px;line-height:1.5;color:var(--ink-2);max-width:34em;text-wrap:pretty}
 .pcite{font-family:var(--ui);font-weight:500;letter-spacing:.16em;text-transform:uppercase;font-size:14px;color:var(--ink)}
 .pcite small{color:var(--muted);font-size:12px;margin-left:4px}
 .prose{display:flex;flex-direction:column;gap:12px}
@@ -131,7 +131,7 @@ textarea::placeholder{color:var(--muted)}
 
 /* Verse cards */
 .vcard{background:var(--page);border:1px solid var(--rule);border-radius:4px;padding:18px;display:flex;flex-direction:column;gap:10px}
-.vcard p.v{font-family:var(--scripture);font-style:italic;font-size:21px;line-height:1.45}
+.vcard p.v{font-family:var(--scripture);font-style:italic;font-size:19px;line-height:1.5}
 .vcard .ref{font-family:var(--ui);font-weight:600;letter-spacing:.16em;text-transform:uppercase;font-size:13px}
 .vcard .ref small{color:var(--muted);margin-left:4px}
 .vcard .act{background:var(--paper)}
@@ -3438,16 +3438,16 @@ function drawImage(){
    c.fillStyle="#1c2b4b";c.fillRect(0,0,w,90);c.fillStyle="#f4ecd8";c.font='500 30px "Barlow",sans-serif';ls(c,"9px");c.fillText("PRESS ON",w/2,29);ls(c,"0px");
    const head=(t||imgRef).toUpperCase();
    let hs=100,hl;do{c.font=`700 ${hs}px "Oswald","Arial Narrow",sans-serif`;hl=wrap(c,head,w*.84);hs-=4}while(hl.length>2&&hs>56);hs+=4;
-   let vs=50,vl,vlh;do{c.font=`italic 400 ${vs}px "EB Garamond",Georgia,serif`;vl=wrap(c,"“"+V[imgRef]+"”",w*.78);vlh=vs*1.42;vs-=2}while(vl.length*vlh>h*.5&&vs>28);vs+=2;
+   let vs=50,vl,vlh;do{c.font=`italic 400 ${vs}px "Tinos","Times New Roman",serif`;vl=wrap(c,"“"+V[imgRef]+"”",w*.78);vlh=vs*1.42;vs-=2}while(vl.length*vlh>h*.5&&vs>28);vs+=2;
    const hlh=hs*1.06,total=hl.length*hlh+64+vl.length*vlh+44+40,top=90+(h-90-total)/2;
    c.fillStyle="#141a26";c.font=`700 ${hs}px "Oswald","Arial Narrow",sans-serif`;hl.forEach((l,i)=>c.fillText(l,w/2,top+i*hlh));
    let y=top+hl.length*hlh+64;
-   c.fillStyle="#343c4c";c.font=`italic 400 ${vs}px "EB Garamond",Georgia,serif`;vl.forEach((l,i)=>c.fillText(l,w/2,y+i*vlh));
+   c.fillStyle="#343c4c";c.font=`italic 400 ${vs}px "Tinos","Times New Roman",serif`;vl.forEach((l,i)=>c.fillText(l,w/2,y+i*vlh));
    y+=vl.length*vlh+44;c.fillStyle="#86600f";c.font='600 34px "Barlow",sans-serif';ls(c,"6px");c.fillText((imgRef+"  ·  WEB").toUpperCase(),w/2,y);ls(c,"0px");
   }else{
-   let size=64,lines,lh;do{c.font=`400 ${size}px "EB Garamond",Georgia,serif`;lines=wrap(c,V[imgRef],w*.8);lh=size*1.36;size-=2}while(lines.length*lh>h*.56&&size>30);size+=2;
+   let size=64,lines,lh;do{c.font=`400 ${size}px "Tinos","Times New Roman",serif`;lines=wrap(c,V[imgRef],w*.8);lh=size*1.36;size-=2}while(lines.length*lh>h*.56&&size>30);size+=2;
    const total=lines.length*lh,top=h*.47-total/2;
-   c.fillStyle="#fff";c.shadowColor="rgba(0,0,0,.6)";c.shadowBlur=24;c.font=`400 ${size}px "EB Garamond",Georgia,serif`;
+   c.fillStyle="#fff";c.shadowColor="rgba(0,0,0,.6)";c.shadowBlur=24;c.font=`400 ${size}px "Tinos","Times New Roman",serif`;
    lines.forEach((l,i)=>c.fillText(l,w/2,top+i*lh));
    c.shadowBlur=0;c.fillStyle="#f2d7a8";c.font='700 46px "Oswald",sans-serif';ls(c,"4px");c.fillText(imgRef.toUpperCase(),w/2,top+total+34);
    c.fillStyle="rgba(255,255,255,.65)";c.font='600 28px "Barlow",sans-serif';ls(c,"6px");c.fillText("PRESS ON  ·  WEB",w/2,h-80);ls(c,"0px");
