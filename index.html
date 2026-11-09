@@ -3509,7 +3509,7 @@ function installCard(onToday){
 document.addEventListener("click",async ev=>{const b=ev.target.closest("button");if(!b)return;
  if("install" in b.dataset&&installPrompt){installPrompt.prompt();try{await installPrompt.userChoice}catch(e){}installPrompt=null;render()}
  if("dismissInstall" in b.dataset){S.installDismissed=true;persist();render()}});
-if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>{if(!pushEnabled())navigator.serviceWorker.register("sw.js").catch(()=>{})});
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>{if(!pushEnabled())navigator.serviceWorker.register("OneSignalSDKWorker.js").catch(()=>{})});
 
 /* ---------- Daily verse reminders (OneSignal web push) ----------
    Paste your OneSignal App ID between the quotes to switch reminders on. */
@@ -3521,13 +3521,13 @@ function pushInit(){
  if(!ONESIGNAL_APP_ID||!PUSH.supported||!location.protocol.startsWith("http"))return;
  window.OneSignalDeferred=window.OneSignalDeferred||[];
  const s=document.createElement("script");s.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";s.defer=true;
- s.onerror=()=>{PUSH.error="Couldn’t reach the reminder service. Check your internet connection and reopen the app.";navigator.serviceWorker.register("sw.js").catch(()=>{});render()};
+ s.onerror=()=>{PUSH.error="Couldn’t reach the reminder service. Check your internet connection and reopen the app.";navigator.serviceWorker.register("OneSignalSDKWorker.js").catch(()=>{});render()};
  document.head.appendChild(s);
  setTimeout(()=>{if(!PUSH.ready&&!PUSH.error){PUSH.error="The reminder service didn’t respond. Close the app completely and open it again.";render()}},15000);
  OneSignalDeferred.push(async OneSignal=>{
   const scope=location.pathname.replace(/[^/]*$/,"");
   try{
-   await OneSignal.init({appId:ONESIGNAL_APP_ID,serviceWorkerPath:scope.replace(/^\//,"")+"sw.js",serviceWorkerParam:{scope},allowLocalhostAsSecureOrigin:true,autoResubscribe:true,notifyButton:{enable:false}});
+   await OneSignal.init({appId:ONESIGNAL_APP_ID,serviceWorkerPath:scope.replace(/^\//,"")+"OneSignalSDKWorker.js",serviceWorkerParam:{scope},allowLocalhostAsSecureOrigin:true,autoResubscribe:true,notifyButton:{enable:false}});
    PUSH.ready=true;
    PUSH.on=!!OneSignal.User.PushSubscription.optedIn&&Notification.permission==="granted";
    if(PUSH.on)OneSignal.User.addTag("utc_offset",utcOffset());
