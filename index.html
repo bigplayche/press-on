@@ -3375,7 +3375,7 @@ function renderToday(){
   <div><span class="eyebrow">Put it into practice</span><h2>Today’s huddle</h2></div>
   <div class="card play">${I.whistle}<div><span class="label">Game plan</span><p>${e.play}</p></div></div>
   <div class="card"><span class="label">Huddle up</span><p class="q">${e.q}</p><textarea id="j-${key}" data-journal="${key}" placeholder="Write your answer. It stays private on this device.">${note.replace(/</g,"&lt;")}</textarea><span class="saved-note" id="jn"></span></div>
-  ${done?`<div class="complete"><span class="eyebrow">Devotional complete</span><span class="big">${streak()}</span><span>day streak. Keep pressing on.</span></div>`:`<button class="btn block" data-act="finish" data-key="${key}">${I.check}Mark today complete</button>`}
+  ${done?`<div class="complete"><span class="eyebrow">Devotional complete</span><span class="big">${streak()}</span><span>day streak. Keep pressing on.</span></div>${reminderCard(true)}`:`<button class="btn block" data-act="finish" data-key="${key}">${I.check}Mark today complete</button>`}
  </section>
  <section class="stack" style="gap:12px">
   <div class="sec-head"><div><span class="eyebrow">Keep training</span><h2>Plans</h2></div><button class="back" data-tab="plans">See all</button></div>
@@ -3413,6 +3413,7 @@ function renderMe(){
  view.innerHTML=`<div class="stack" style="gap:22px;padding-top:10px">
  <div><span class="eyebrow">Your stats</span><h1>Season so far</h1></div>
  ${installCard(false)}
+ ${reminderCard(false)}
  <div class="stats"><div class="stat hot"><b>${streak()}</b><small>Streak</small></div><div class="stat"><b>${huddles}</b><small>Days</small></div><div class="stat"><b>${planDays}</b><small>Plan days</small></div><div class="stat"><b>${S.saved.length}</b><small>Saved</small></div></div>
  <section class="stack" style="gap:12px"><h2>Saved verses</h2>${S.saved.length?S.saved.map(vcard).join(""):`<div class="empty">Tap Save on any verse and it will show up here for game day.</div>`}</section>
  <section class="stack" style="gap:12px"><h2>Huddle journal</h2>${entries.length?`<div class="vcard" style="gap:0;padding-block:4px">${entries.map(([k,v])=>`<div class="jentry"><span class="d">${new Date(k+"T12:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</span><span class="qq">${v.q}</span><span class="a">${v.a.replace(/</g,"&lt;")}</span></div>`).join("")}</div>`:`<div class="empty">Your answers to each day’s Huddle Up question are saved here, privately on this device.</div>`}</section>
@@ -3509,6 +3510,55 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("button")
  if("install" in b.dataset&&installPrompt){installPrompt.prompt();try{await installPrompt.userChoice}catch(e){}installPrompt=null;render()}
  if("dismissInstall" in b.dataset){S.installDismissed=true;persist();render()}});
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+/* ---------- Daily verse reminders (OneSignal web push) ----------
+   Paste your OneSignal App ID between the quotes to switch reminders on. */
+const ONESIGNAL_APP_ID = "";
+const PUSH={ready:false,on:false,supported:"Notification" in window&&"serviceWorker" in navigator&&"PushManager" in window};
+function utcOffset(){return String(-new Date().getTimezoneOffset())}
+function pushInit(){
+ if(!ONESIGNAL_APP_ID||!PUSH.supported||!location.protocol.startsWith("http"))return;
+ window.OneSignalDeferred=window.OneSignalDeferred||[];
+ const s=document.createElement("script");s.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";s.defer=true;document.head.appendChild(s);
+ OneSignalDeferred.push(async OneSignal=>{
+  const scope=location.pathname.replace(/[^/]*$/,"");
+  try{
+   await OneSignal.init({appId:ONESIGNAL_APP_ID,serviceWorkerPath:scope.replace(/^\//,"")+"sw.js",serviceWorkerParam:{scope},allowLocalhostAsSecureOrigin:true,autoResubscribe:true,notifyButton:{enable:false}});
+   PUSH.ready=true;
+   PUSH.on=!!OneSignal.User.PushSubscription.optedIn&&Notification.permission==="granted";
+   if(PUSH.on)OneSignal.User.addTag("utc_offset",utcOffset());
+   OneSignal.User.PushSubscription.addEventListener("change",e=>{PUSH.on=!!(e.current&&e.current.optedIn);render()});
+   render();
+  }catch(e){console.warn("Reminders unavailable",e)}
+ });
+}
+async function pushSet(want){
+ if(!PUSH.ready){toast("Reminders are still loading. Try again in a moment.");return}
+ const OS=window.OneSignal;
+ try{
+  if(want){
+   await OS.Notifications.requestPermission();
+   if(Notification.permission!=="granted"){toast("Notifications are blocked. Turn them on for Press On in your phone’s settings.");return}
+   await OS.User.PushSubscription.optIn();OS.User.addTag("utc_offset",utcOffset());
+   PUSH.on=true;toast("You’ll get the daily verse at 7:00 a.m.");
+  }else{await OS.User.PushSubscription.optOut();PUSH.on=false;toast("Daily verse reminder is off")}
+ }catch(e){toast("Something went wrong. Please try again.")}
+ S.pushAsked=true;persist();render();
+}
+function reminderCard(prompt){
+ if(!ONESIGNAL_APP_ID)return "";
+ if(prompt&&(PUSH.on||S.pushAsked||!PUSH.ready))return "";
+ if(IS_IOS&&!IS_STANDALONE)return prompt?"":`<section class="card"><span class="label">Daily verse reminder</span><p>To get the daily verse as a notification on iPhone, first add Press On to your home screen. Then open it from your home screen and turn the reminder on here.</p></section>`;
+ if(!PUSH.supported)return "";
+ const head=prompt?"Want this every morning?":"Daily verse reminder";
+ const text=PUSH.on?"On. The day’s verse arrives at 7:00 a.m. your time.":"Get the day’s verse as a notification at 7:00 a.m. your time.";
+ const btns=PUSH.on?`<button class="btn ghost block" data-push="off">Turn off reminder</button>`:`<div class="row"><button class="btn" data-push="on">Remind me daily</button>${prompt?'<button class="btn ghost" data-push-later>Not now</button>':""}</div>`;
+ return `<section class="card"><span class="label">${head}</span><p>${text}</p>${btns}</section>`;
+}
+document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
+ if(b.dataset.push)pushSet(b.dataset.push==="on");
+ if("pushLater" in b.dataset){S.pushAsked=true;persist();render()}});
+pushInit();
 
 render();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{for(const k in sceneCache)delete sceneCache[k];const y=window.scrollY;render();window.scrollTo(0,y)});

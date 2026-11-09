@@ -1,5 +1,7 @@
-// Press On offline support: keeps the app working without a connection.
-const CACHE = "press-on-v1";
+// Press On offline support and daily verse notifications.
+// OneSignal's push code runs inside this same service worker.
+try { importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js"); } catch (e) {}
+const CACHE = "press-on-v2";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
