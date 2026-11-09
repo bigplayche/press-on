@@ -1,0 +1,16 @@
+{
+  "name": "Press On",
+  "short_name": "Press On",
+  "description": "Daily Bible devotionals and reading plans for athletes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e7eaf0",
+  "theme_color": "#1c2b4b",
+  "orientation": "portrait",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
