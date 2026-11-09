@@ -3540,7 +3540,7 @@ async function pushSet(want){
    await OS.Notifications.requestPermission();
    if(Notification.permission!=="granted"){toast("Notifications are blocked. Turn them on for Press On in your phone’s settings.");return}
    await OS.User.PushSubscription.optIn();OS.User.addTag("utc_offset",utcOffset());
-   PUSH.on=true;toast("You’ll get the daily verse at 7:00 a.m.");
+   PUSH.on=true;toast("You’ll get the daily verse at 6:00 a.m.");
   }else{await OS.User.PushSubscription.optOut();PUSH.on=false;toast("Daily verse reminder is off")}
  }catch(e){toast("Something went wrong. Please try again.")}
  S.pushAsked=true;persist();render();
@@ -3551,7 +3551,7 @@ function reminderCard(prompt){
  if(IS_IOS&&!IS_STANDALONE)return prompt?"":`<section class="card"><span class="label">Daily verse reminder</span><p>To get the daily verse as a notification on iPhone, first add Press On to your home screen. Then open it from your home screen and turn the reminder on here.</p></section>`;
  if(!PUSH.supported)return "";
  const head=prompt?"Want this every morning?":"Daily verse reminder";
- const text=PUSH.on?"On. The day’s verse arrives at 7:00 a.m. your time.":"Get the day’s verse as a notification at 7:00 a.m. your time.";
+ const text=PUSH.on?"On. The day’s verse arrives at 6:00 a.m. your time.":"Get the day’s verse as a notification at 6:00 a.m. your time.";
  const btns=PUSH.on?`<button class="btn ghost block" data-push="off">Turn off reminder</button>`:`<div class="row"><button class="btn" data-push="on">Remind me daily</button>${prompt?'<button class="btn ghost" data-push-later>Not now</button>':""}</div>`;
  return `<section class="card"><span class="label">${head}</span><p>${text}</p>${btns}</section>`;
 }

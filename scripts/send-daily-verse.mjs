@@ -1,6 +1,7 @@
 // Sends the day's Press On verse as a push notification through OneSignal.
 // Runs every hour from .github/workflows/daily-verse.yml. Each run notifies the
-// people whose local time is now 7 a.m., with the devotional for their local date.
+// people whose local time reaches 6:00 a.m. in the next hour, scheduled for exactly 6:00
+// their time, with the devotional for their local date.
 //
 // Settings (environment variables):
 //   ONESIGNAL_API_KEY  required, stored as a GitHub secret
@@ -9,7 +10,7 @@
 import { readFileSync } from "node:fs";
 
 const SITE_URL = "https://bigplayche.github.io/press-on/";
-const SEND_HOUR = 7; // local time
+const SEND_HOUR = 6; // 6:00 a.m. local time
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 
 const appId = (html.match(/const ONESIGNAL_APP_ID = "([^"]*)"/) || [])[1];
@@ -39,13 +40,14 @@ function message(e) {
   return { heading: `Press On · ${e.title}`, body: `“${verse.replace(/^“|”$/g, "")}” ${e.ref}` };
 }
 
-async function send(msg, filters, label) {
+async function send(msg, filters, label, sendAt) {
   const payload = {
     app_id: appId, target_channel: "push",
     headings: { en: msg.heading }, contents: { en: msg.body },
     url: SITE_URL, filters,
   };
-  if (DRY) { console.log(`[dry run] ${label}\n  ${msg.heading}\n  ${msg.body}`); return; }
+  if (sendAt && sendAt > Date.now() + 60000) payload.send_after = new Date(sendAt).toISOString();
+  if (DRY) { console.log(`[dry run] ${label}${payload.send_after ? " at " + payload.send_after : ""}\n  ${msg.heading}\n  ${msg.body}`); return; }
   const res = await fetch("https://api.onesignal.com/notifications", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Key ${apiKey}` },
@@ -62,14 +64,24 @@ if (TEST) {
   const msg = message(entryFor(now.getUTCMonth(), now.getUTCDate()));
   await send(msg, [{ field: "tag", key: "utc_offset", relation: "exists" }], "Test to all subscribers");
 } else {
-  // Every real-world UTC offset, in 15-minute steps from UTC-12 to UTC+14.
+  // The job is scheduled at :50 every hour. Each run covers the 60 minutes after its
+  // scheduled slot, even if GitHub starts it late, so no time zone is skipped.
+  const HOUR = 3600000;
+  let slot = Math.floor(now.getTime() / HOUR) * HOUR + 50 * 60000;
+  if (slot > now.getTime()) slot -= HOUR;
   let sent = 0;
+  // Every real-world UTC offset, in 15-minute steps from UTC-12 to UTC+14.
   for (let off = -720; off <= 840; off += 15) {
-    const local = new Date(now.getTime() + off * 60000);
-    if (local.getUTCHours() !== SEND_HOUR) continue;
+    const offMs = off * 60000;
+    // Find the moment it is SEND_HOUR:00 in this time zone, inside (slot, slot + 1 hour].
+    const localSlot = new Date(slot + offMs);
+    let target = Date.UTC(localSlot.getUTCFullYear(), localSlot.getUTCMonth(), localSlot.getUTCDate(), SEND_HOUR) - offMs;
+    if (target <= slot) target += 24 * HOUR;
+    if (target > slot + HOUR) continue;
+    const local = new Date(target + offMs);
     const msg = message(entryFor(local.getUTCMonth(), local.getUTCDate()));
-    await send(msg, [{ field: "tag", key: "utc_offset", relation: "=", value: String(off) }], `UTC${off >= 0 ? "+" : ""}${off / 60}`);
+    await send(msg, [{ field: "tag", key: "utc_offset", relation: "=", value: String(off) }], `UTC${off >= 0 ? "+" : ""}${off / 60}`, target);
     sent++;
   }
-  console.log(`Checked ${sent} time zone(s) where it is ${SEND_HOUR} a.m. now.`);
+  console.log(`Scheduled ${sent} time zone(s) reaching ${SEND_HOUR}:00 a.m. in the next hour.`);
 }

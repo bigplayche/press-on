@@ -2,7 +2,7 @@ name: Daily verse notification
 
 on:
   schedule:
-    - cron: "5 * * * *"   # every hour; each run notifies people whose local time is 7 a.m.
+    - cron: "50 * * * *"   # every hour; schedules 6:00 a.m. delivery for time zones reaching 6 a.m. next
   workflow_dispatch:
     inputs:
       test:
