@@ -3552,7 +3552,7 @@ function pushInit(){
    await OneSignal.init({appId:ONESIGNAL_APP_ID,serviceWorkerPath:scope.replace(/^\//,"")+"OneSignalSDKWorker.js",serviceWorkerParam:{scope},allowLocalhostAsSecureOrigin:true,autoResubscribe:true,notifyButton:{enable:false}});
    PUSH.ready=true;
    PUSH.on=!!OneSignal.User.PushSubscription.optedIn&&Notification.permission==="granted";
-   if(PUSH.on)OneSignal.User.addTag("utc_offset",utcOffset());
+   if(PUSH.on){OneSignal.User.addTag("utc_offset",utcOffset());setTimeout(()=>{try{OneSignal.User.addTag("utc_offset",utcOffset())}catch(e){}},4000)}
    OneSignal.User.PushSubscription.addEventListener("change",e=>{PUSH.on=!!(e.current&&e.current.optedIn);render()});
    render();
   }catch(e){console.warn("Reminders unavailable",e);PUSH.error="Reminders couldn’t start: "+((e&&e.message)||e);render()}
@@ -3566,7 +3566,7 @@ async function pushSet(want){
   if(want){
    await OS.Notifications.requestPermission();
    if(Notification.permission!=="granted"){toast("Notifications are blocked. Turn them on for Press On in your phone’s settings.");return}
-   await OS.User.PushSubscription.optIn();OS.User.addTag("utc_offset",utcOffset());
+   await OS.User.PushSubscription.optIn();OS.User.addTag("utc_offset",utcOffset());setTimeout(()=>{try{OS.User.addTag("utc_offset",utcOffset())}catch(e){}},4000);
    PUSH.on=true;toast("You’ll get the daily verse at 6:00 a.m.");
   }else{await OS.User.PushSubscription.optOut();PUSH.on=false;toast("Daily verse reminder is off")}
  }catch(e){console.warn(e);PUSH.error="Couldn’t turn on reminders: "+((e&&e.message)||e);toast(PUSH.error)}

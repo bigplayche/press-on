@@ -40,12 +40,13 @@ function message(e) {
   return { heading: `Press On · ${e.title}`, body: `“${verse.replace(/^“|”$/g, "")}” ${e.ref}` };
 }
 
-async function send(msg, filters, label, sendAt) {
+async function send(msg, filters, label, sendAt, segments) {
   const payload = {
     app_id: appId, target_channel: "push",
     headings: { en: msg.heading }, contents: { en: msg.body },
-    url: SITE_URL, filters,
+    url: SITE_URL,
   };
+  if (segments) payload.included_segments = segments; else payload.filters = filters;
   if (sendAt && sendAt > Date.now() + 60000) payload.send_after = new Date(sendAt).toISOString();
   if (DRY) { console.log(`[dry run] ${label}${payload.send_after ? " at " + payload.send_after : ""}\n  ${msg.heading}\n  ${msg.body}`); return; }
   const res = await fetch("https://api.onesignal.com/notifications", {
@@ -55,14 +56,17 @@ async function send(msg, filters, label, sendAt) {
   });
   const out = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(`${label}: OneSignal error ${res.status} ${JSON.stringify(out)}`);
-  const none = JSON.stringify(out.errors || "").includes("not subscribed");
-  console.log(`${label}: ${none ? "no subscribers in this time zone" : `sent (id ${out.id})`}`);
+  const none = !out.id || JSON.stringify(out.errors || "").includes("not subscribed");
+  console.log(`${label}: ${none ? "no matching subscribers" : `sent (id ${out.id})`}${out.errors ? " | OneSignal says: " + JSON.stringify(out.errors) : ""}`);
+  return !none;
 }
 
 const now = new Date();
 if (TEST) {
   const msg = message(entryFor(now.getUTCMonth(), now.getUTCDate()));
-  await send(msg, [{ field: "tag", key: "utc_offset", relation: "exists" }], "Test to all subscribers");
+  // Send to every subscribed device, whether or not its time zone tag has synced yet.
+  const ok = await send(msg, null, "Test to all subscribers", 0, ["Total Subscriptions"]);
+  if (!ok) await send(msg, null, "Test to all subscribers (older segment name)", 0, ["Subscribed Users"]);
 } else {
   // The job is scheduled at :50 every hour. Each run covers the 60 minutes after its
   // scheduled slot, even if GitHub starts it late, so no time zone is skipped.
