@@ -159,7 +159,27 @@ textarea::placeholder{color:var(--muted)}
 
 /* Tab bar */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--page);border-top:1px solid var(--rule);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-.tabs-in{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabs-in{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.readmore{align-self:center;background:none;border:0;color:var(--prayer);font-weight:600;font-size:15px;padding:4px 8px;display:inline-flex;align-items:center;gap:6px}
+.readmore svg{width:16px;height:16px}
+.bhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.bpick{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:var(--page);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;flex:none}
+.bpick svg{width:16px;height:16px}
+.btext{display:flex;flex-direction:column;gap:2px}
+.bv{font-family:var(--scripture);font-size:19px;line-height:1.65;padding:4px 8px;margin:0 -8px;border-radius:4px;scroll-margin-top:90px}
+.bv sup{font-family:var(--ui);font-size:11px;font-weight:600;color:var(--muted);margin-right:5px;vertical-align:super;line-height:0}
+.bv.hl{background:rgba(226,184,90,.22);box-shadow:inset 3px 0 0 var(--prayer)}
+.bnav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bnav .btn{font-size:15px;padding:12px 10px}
+.blist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.bbook{text-align:left;background:var(--page);border:1px solid var(--rule);border-radius:4px;padding:11px 12px;display:flex;flex-direction:column;gap:1px}
+.bbook b{font-family:var(--display);font-size:17px;font-weight:600;text-transform:uppercase;line-height:1.15}
+.bbook small{color:var(--muted);font-size:12px}
+.bbook[aria-current="true"]{border-color:var(--prayer);box-shadow:inset 0 3px 0 var(--prayer)}
+.bchaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
+.bchaps button{aspect-ratio:1;background:var(--page);border:1px solid var(--rule);border-radius:4px;font-family:var(--display);font-size:18px;font-weight:600}
+.bchaps button[aria-current="true"]{background:var(--band);color:var(--band-ink);border-color:var(--band)}
+
 .tab{background:none;border:0;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
 .tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--prayer)}
@@ -211,6 +231,7 @@ textarea::placeholder{color:var(--muted)}
     <button class="tab" data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Today</button>
     <button class="tab" data-tab="plans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 15l2 2 4-4"/></svg>Plans</button>
     <button class="tab" data-tab="moments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M12 7v6M9 10h6"/></svg>Locker</button>
+    <button class="tab" data-tab="bible"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c3-1.5 6.5-1.5 10 1v14c-3.5-2.5-7-2.5-10-1z"/><path d="M22 5c-3-1.5-6.5-1.5-10 1v14c3.5-2.5 7-2.5 10-1z"/></svg>Bible</button>
     <button class="tab" data-tab="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Me</button>
   </div>
 </nav>
@@ -3338,7 +3359,7 @@ const I={
 
 /* ---------- Components ---------- */
 function actions(ref){const sv=S.saved.includes(ref);
- return `<div class="actions"><button class="act ${sv?"saved":""}" data-act="save" data-ref="${ref}" aria-pressed="${sv}">${sv?I.saved:I.save}${sv?"Saved":"Save"}</button><button class="act" data-act="copy" data-ref="${ref}">${I.copy}Copy</button><button class="act" data-act="image" data-ref="${ref}">${I.image}Make image</button></div>`}
+ return `<div class="actions"><button class="act ${sv?"saved":""}" data-act="save" data-ref="${ref}" aria-pressed="${sv}">${sv?I.saved:I.save}${sv?"Saved":"Save"}</button><button class="act" data-act="copy" data-ref="${ref}">${I.copy}Copy</button><button class="act" data-act="image" data-ref="${ref}">${I.image}Make image</button><button class="act" data-read="${ref}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c3-1.5 6.5-1.5 10 1v14c-3.5-2.5-7-2.5-10-1z"/><path d="M22 5c-3-1.5-6.5-1.5-10 1v14c3.5-2.5 7-2.5 10-1z"/></svg>Read chapter</button></div>`}
 function vcard(ref){return `<div class="vcard"><p class="v">“${V[ref]}”</p><div class="ref">${ref}<small>WEB</small></div>${actions(ref)}</div>`}
 function planDone(id){const p=PLANS.find(x=>x.id===id);return (S.plans[id]||[]).length>=p.days.length}
 function planRuns(id){return (S.planRuns&&S.planRuns[id])||0}
@@ -3365,7 +3386,7 @@ function renderToday(){
   <div class="page-in">
    <span class="ptag">${e.tag}</span>
    <h1 class="ptitle">${e.title}</h1>
-   <figure class="pfig"><blockquote class="pverse">“${V[e.ref]}”</blockquote><figcaption class="pcite">${e.ref}<small>WEB</small></figcaption></figure>
+   <figure class="pfig"><blockquote class="pverse">“${V[e.ref]}”</blockquote><figcaption class="pcite">${e.ref}<small>WEB</small></figcaption><button class="readmore" data-read="${e.ref}">Read the full chapter ${I.right}</button></figure>
    <div class="prose">${e.story.map(p=>`<p>${p}</p>`).join("")}</div>
    <p class="pprayer">${e.prayer}</p>
   </div>
@@ -3422,7 +3443,7 @@ function renderMe(){
 }
 function render(){
  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-current",t.dataset.tab===tab?"page":"false"));
- ({today:renderToday,plans:renderPlans,moments:renderMoments,me:renderMe})[tab]();
+ ({today:renderToday,plans:renderPlans,moments:renderMoments,bible:renderBible,me:renderMe})[tab]();
  const s=streak(),el=document.getElementById("streak");el.className="streak"+(s?" on":"");el.innerHTML=`${I.flame}${s}<small>${s===1?"DAY":"DAYS"}</small>`;
 }
 
@@ -3566,6 +3587,46 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b
  if(b.dataset.push)pushSet(b.dataset.push==="on");
  if("pushLater" in b.dataset){S.pushAsked=true;persist();render()}});
 pushInit();
+
+/* ---------- Bible reader (World English Bible, one file per book in bible/) ---------- */
+const BOOKS=[["genesis", "Genesis", 50], ["exodus", "Exodus", 40], ["leviticus", "Leviticus", 27], ["numbers", "Numbers", 36], ["deuteronomy", "Deuteronomy", 34], ["joshua", "Joshua", 24], ["judges", "Judges", 21], ["ruth", "Ruth", 4], ["1samuel", "1 Samuel", 31], ["2samuel", "2 Samuel", 24], ["1kings", "1 Kings", 22], ["2kings", "2 Kings", 25], ["1chronicles", "1 Chronicles", 29], ["2chronicles", "2 Chronicles", 36], ["ezra", "Ezra", 10], ["nehemiah", "Nehemiah", 13], ["esther", "Esther", 10], ["job", "Job", 42], ["psalms", "Psalms", 150], ["proverbs", "Proverbs", 31], ["ecclesiastes", "Ecclesiastes", 12], ["songofsolomon", "Song of Solomon", 8], ["isaiah", "Isaiah", 66], ["jeremiah", "Jeremiah", 52], ["lamentations", "Lamentations", 5], ["ezekiel", "Ezekiel", 48], ["daniel", "Daniel", 12], ["hosea", "Hosea", 14], ["joel", "Joel", 3], ["amos", "Amos", 9], ["obadiah", "Obadiah", 1], ["jonah", "Jonah", 4], ["micah", "Micah", 7], ["nahum", "Nahum", 3], ["habakkuk", "Habakkuk", 3], ["zephaniah", "Zephaniah", 3], ["haggai", "Haggai", 2], ["zechariah", "Zechariah", 14], ["malachi", "Malachi", 4], ["matthew", "Matthew", 28], ["mark", "Mark", 16], ["luke", "Luke", 24], ["john", "John", 21], ["acts", "Acts", 28], ["romans", "Romans", 16], ["1corinthians", "1 Corinthians", 16], ["2corinthians", "2 Corinthians", 13], ["galatians", "Galatians", 6], ["ephesians", "Ephesians", 6], ["philippians", "Philippians", 4], ["colossians", "Colossians", 4], ["1thessalonians", "1 Thessalonians", 5], ["2thessalonians", "2 Thessalonians", 3], ["1timothy", "1 Timothy", 6], ["2timothy", "2 Timothy", 4], ["titus", "Titus", 3], ["philemon", "Philemon", 1], ["hebrews", "Hebrews", 13], ["james", "James", 5], ["1peter", "1 Peter", 5], ["2peter", "2 Peter", 3], ["1john", "1 John", 5], ["2john", "2 John", 1], ["3john", "3 John", 1], ["jude", "Jude", 1], ["revelation", "Revelation", 22]];
+const BIB={};let bibleMode="reader",biblePickBook=null;
+function bookOf(name){const n=name.toLowerCase().replace(/\s+/g,"");const k=n==="psalm"?"psalms":n;return BOOKS.findIndex(b=>b[0]===k)}
+function parseRef(ref){const m=ref.match(/^(.+) (\d+):(\d+)(?:-(\d+))?$/);if(!m)return null;const b=bookOf(m[1]);if(b<0)return null;return {b,ch:+m[2],from:+m[3],to:+(m[4]||m[3])}}
+function bpos(){return S.bible||{b:bookOf("John"),ch:1}}
+async function loadBook(b){const slug=BOOKS[b][0];if(BIB[slug])return BIB[slug];const r=await fetch("bible/"+slug+".json");if(!r.ok)throw new Error("HTTP "+r.status);return BIB[slug]=await r.json()}
+function openBible(b,ch,hl){S.bible={b,ch,hl:hl||null};persist();bibleMode="reader";tab="bible";render();window.scrollTo(0,0)}
+function renderBible(){
+ const pos=bpos();
+ if(bibleMode==="books"){
+  const grp=(t,a,z)=>`<section class="stack" style="gap:10px"><h2>${t}</h2><div class="blist">${BOOKS.slice(a,z).map((bk,i)=>`<button class="bbook" data-bbook="${a+i}" aria-current="${a+i===pos.b}"><b>${bk[1]}</b><small>${bk[2]} chapter${bk[2]>1?"s":""}</small></button>`).join("")}</div></section>`;
+  view.innerHTML=`<div class="stack" style="gap:22px;padding-top:10px"><button class="back" data-bmode="reader">${I.left}Back to reading</button><div><span class="eyebrow">World English Bible</span><h1>Choose a book</h1></div>${grp("Old Testament",0,39)}${grp("New Testament",39,66)}</div>`;return}
+ if(bibleMode==="chapters"){
+  const b=biblePickBook,bk=BOOKS[b];
+  view.innerHTML=`<div class="stack" style="gap:18px;padding-top:10px"><button class="back" data-bmode="books">${I.left}All books</button><div><span class="eyebrow">Choose a chapter</span><h1>${bk[1]}</h1></div><div class="bchaps">${Array.from({length:bk[2]},(_,i)=>`<button data-bchap="${b}:${i+1}" aria-current="${b===pos.b&&i+1===pos.ch}">${i+1}</button>`).join("")}</div></div>`;return}
+ const bk=BOOKS[pos.b],slug=bk[0];
+ const head=`<div class="bhead"><div><span class="eyebrow">${S.bible?"Continue reading":"Start reading"}</span><h1>${bk[1]} ${pos.ch}</h1></div><button class="bpick" data-bmode="books">${I.down.replace('class="chev"','')}Books</button></div>`;
+ if(!BIB[slug]){
+  view.innerHTML=`<div class="stack" style="gap:18px;padding-top:10px">${head}<p class="muted">Loading ${bk[1]}…</p></div>`;
+  loadBook(pos.b).then(()=>{if(tab==="bible")renderBible()}).catch(()=>{if(tab==="bible")view.querySelector("p.muted").textContent="This book couldn’t load. Check your internet connection and try again."});return}
+ const vs=BIB[slug][pos.ch-1]||[],hl=S.bible&&S.bible.hl;
+ const prev=pos.ch>1?[pos.b,pos.ch-1]:pos.b>0?[pos.b-1,BOOKS[pos.b-1][2]]:null;
+ const next=pos.ch<bk[2]?[pos.b,pos.ch+1]:pos.b<65?[pos.b+1,1]:null;
+ const lbl=x=>`${BOOKS[x[0]][1]} ${x[1]}`;
+ view.innerHTML=`<div class="stack" style="gap:18px;padding-top:10px">${head}
+ <article class="page"><div class="page-in btext">${vs.map((t,i)=>t?`<p class="bv${hl&&i+1>=hl[0]&&i+1<=hl[1]?" hl":""}" id="bv${i+1}"><sup>${i+1}</sup>${t}</p>`:"").join("")}</div></article>
+ <div class="bnav">${prev?`<button class="btn ghost" data-bgo="${prev}">${I.left}${lbl(prev)}</button>`:"<span></span>"}${next?`<button class="btn" data-bgo="${next}">${lbl(next)}${I.right}</button>`:""}</div>
+ <p class="foot">World English Bible (public domain).</p></div>`;
+ if(hl){const el=document.getElementById("bv"+hl[0]);if(el)setTimeout(()=>el.scrollIntoView({block:"center"}),30)}
+}
+document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const d=b.dataset;
+ if(d.read){const r=parseRef(d.read);if(r){closeImage();openBible(r.b,r.ch,[r.from,r.to])}return}
+ if(d.bmode){bibleMode=d.bmode;render();window.scrollTo(0,0);return}
+ if(d.bbook){biblePickBook=+d.bbook;bibleMode="chapters";render();window.scrollTo(0,0);return}
+ if(d.bchap){const [x,c]=d.bchap.split(":").map(Number);openBible(x,c,null);return}
+ if(d.bgo){const [x,c]=d.bgo.split(",").map(Number);openBible(x,c,null);return}
+ if(d.tab==="bible"&&b.classList.contains("tab"))bibleMode="reader";
+},true);
 
 render();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{for(const k in sceneCache)delete sceneCache[k];const y=window.scrollY;render();window.scrollTo(0,y)});
