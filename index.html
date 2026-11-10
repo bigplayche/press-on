@@ -3579,9 +3579,11 @@ function reminderCard(prompt){
  if(IS_IOS&&!IS_STANDALONE)return prompt?"":`<section class="card"><span class="label">Daily verse reminder</span><p>To get the daily verse as a notification on iPhone, first add Press On to your home screen. Then open it from your home screen and turn the reminder on here.</p></section>`;
  if(!PUSH.supported)return "";
  const head=prompt?"Want this every morning?":"Daily verse reminder";
- const text=PUSH.on?"On. The day’s verse arrives at 6:00 a.m. your time.":"Get the day’s verse as a notification at 6:00 a.m. your time.";
+ const sid=(PUSH.ready&&window.OneSignal&&OneSignal.User.PushSubscription.id)||"";
+ const text=PUSH.on?(sid?"On. The day’s verse arrives at 6:00 a.m. your time.":"Almost on. Your phone allowed notifications, but OneSignal hasn’t registered it yet. Close the app completely, wait a minute and open it again."):"Get the day’s verse as a notification at 6:00 a.m. your time.";
+ const idline=PUSH.on?`<p class="muted" style="font-size:12px;word-break:break-all">${sid?"Device ID: "+sid:"Device ID: not registered yet"} · Notifications: ${typeof Notification!=="undefined"?Notification.permission:"unavailable"}</p>`:"";
  const btns=PUSH.on?`<button class="btn ghost block" data-push="off">Turn off reminder</button>`:`<div class="row"><button class="btn" data-push="on">Remind me daily</button>${prompt?'<button class="btn ghost" data-push-later>Not now</button>':""}</div>`;
- return `<section class="card"><span class="label">${head}</span><p>${text}</p>${btns}</section>`;
+ return `<section class="card"><span class="label">${head}</span><p>${text}</p>${idline}${btns}</section>`;
 }
 document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
  if(b.dataset.push)pushSet(b.dataset.push==="on");
